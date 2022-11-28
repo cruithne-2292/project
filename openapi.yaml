@@ -1,0 +1,285 @@
+openapi: 3.0.3
+info:
+  title: Sample Project - OpenAPI 3.0
+  description: This is a documentation on the sample project
+  version: 1.0.1
+servers:
+  - url: http://localhost:8080/api/v1
+tags:
+  - name: login
+    description: login api
+  - name: employee
+    description: APIs for Employee
+  - name: department
+    description: APIs for Department
+paths:
+  /login/:
+    post:
+      tags:
+        - login
+      summary: log in
+      description: log in with username and password
+      operationId: login
+      requestBody:
+        description: username and password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/login'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Unable to log in with provided credentials.
+  /employee/:
+    post:
+      tags:
+        - employee
+      summary: create an employee
+      description: create an employee with personal information
+      operationId: create_employee
+      requestBody:
+        description: Personal information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_employee_body'
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+        '400':
+          description: Invalid input
+      security:
+        - Authorization: []
+    get:
+      tags:
+        - employee
+      summary: list employees
+      description: list employees with search filter by last name and department id and with pagination
+      operationId: list_employee
+      parameters:
+        - name: last_name
+          in: query
+          description: filtered by last name
+          required: false
+          explode: true
+          schema:
+            type: string
+        - name: department_id
+          in: query
+          description: filtered by department id
+          required: false
+          explode: true
+          schema:
+            type: number
+        - name: p
+          in: query
+          description: page number
+          required: true
+          explode: true
+          schema:
+            type: number
+            default: 1
+        - name: page_size
+          in: query
+          description: page size
+          required: false
+          explode: true
+          schema:
+            type: number
+            default: 10
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/list_employee_response'
+        '404':
+          description: Invalid page
+      security:
+        - Authorization: []
+  /employee/{employee_id}/:
+    delete:
+      tags:
+        - employee
+      summary: delete an employee
+      description: delete an employee by employee id
+      operationId: delete_employee
+      parameters:
+        - name: employee_id
+          in: path
+          description: employee id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: invalid input
+      security:
+        - Authorization: []
+  /department/:
+    post:
+      tags:
+        - department
+      summary: create a department
+      description: create a department with department information
+      operationId: create_department
+      requestBody:
+        description: department name and chief
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_department_body'
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+        '400':
+          description: Invalid input
+      security:
+        - Authorization: []
+    get:
+      tags:
+        - department
+      summary: list departments
+      description: list departments with employee count and salary sum
+      operationId: list_departments
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/list_departments_response'
+        '404':
+          description: Invalid page
+  /department/{id}/:
+    delete:
+      tags:
+        - department
+      summary: delete a department
+      description: delete a department by department id
+      operationId: delete_department
+      parameters:
+        - name: id
+          in: path
+          description: department id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: invalid input
+      security:
+        - Authorization: []
+components:
+  schemas:
+    login:
+      type: object
+      properties:
+        username:
+          type: string
+          description: username
+          example: manager
+        password:
+          type: string
+          description: password
+          example: 12345678
+    create_employee_body:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: first name
+          example: John
+        last_name:
+          type: string
+          description: last name
+          example: Doe
+        salary:
+          type: number
+          description: salary
+          example: 90000
+        position:
+          type: integer
+          description: position
+          example: 1
+        age:
+          type: integer
+          description: age
+          example: 30
+        department_id:
+          type: integer
+          description: department id
+          example: 1
+    list_employee_response:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: employee id
+          example: 1
+        first_name:
+          type: string
+          description: first name
+          example: John
+        last_name:
+          type: string
+          description: last name
+          example: Doe
+        position:
+          type: integer
+          description: position
+          example: 1
+        salary:
+          type: number
+          description: salary
+          example: 90000
+        age:
+          type: integer
+          description: age
+          example: 30
+        department_id:
+          type: integer
+          description: department id
+          example: 1
+    create_department_body:
+      type: object
+      properties:
+        department_name:
+          type: string
+          description: department name
+          example: engineering
+        chief:
+          type: integer
+          description: employee id
+          example: 1
+    list_departments_response:
+      type: object
+      properties:
+        departmen_id:
+          type: integer
+          description: department id
+          example: 1
+        employee_count:
+          type: integer
+          description: employee count
+          example: 1
+        salary_sum:
+          type: number
+          description: salary
+          example: 900000
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
