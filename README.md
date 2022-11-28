@@ -2,7 +2,7 @@
 sample project
 
 # run docker
-docker build -t project -f Dockerfile .
+docker build -t project -f Dockerfile . <br />
 docker run -d -p 8080:8080 project
 
 # swagger
