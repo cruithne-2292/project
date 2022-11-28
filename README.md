@@ -9,5 +9,5 @@ docker run -d -p 8080:8080 project
 openapi.yaml
 
 # authentication header format
-example
+example <br />
 Authorization: Token 60ebc33702758d96702c2b5344b35bf17c1c776c
